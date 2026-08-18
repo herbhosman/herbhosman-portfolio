@@ -223,7 +223,7 @@ export default function Home() {
       <footer className="border-t border-line bg-foreground px-5 py-6 text-sm text-white/55 sm:px-10">
         <div className="mx-auto flex max-w-6xl flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 Herbert Hosman</p>
-          <p>Ventura, CA · Built as a living sample of the work</p>
+          <p>Ventura, CA · Next.js · Tailwind CSS · TypeScript · Vercel</p>
         </div>
       </footer>
     </div>
