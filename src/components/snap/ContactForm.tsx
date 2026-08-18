@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -9,9 +9,61 @@ const FORMSUBMIT =
   process.env.NEXT_PUBLIC_FORMSUBMIT_ENDPOINT ??
   "https://formsubmit.co/ajax/hahosman@gmail.com";
 
+const MIN_DWELL_MS = 2500;
+const RATE_KEY = "hh-contact-subs";
+const RATE_MAX = 3;
+const RATE_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+/** Phrases FormSubmit will silently drop (spam filters). */
+const BLACKLIST = [
+  "viagra",
+  "cialis",
+  "crypto investment",
+  "bitcoin profit",
+  "seo service",
+  "link building",
+  "guest post",
+  "onlyfans",
+  "casino",
+  "forex",
+].join(",");
+
+function readSubmitCount(): number {
+  try {
+    const raw = localStorage.getItem(RATE_KEY);
+    if (!raw) return 0;
+    const parsed = JSON.parse(raw) as { t: number }[];
+    const cutoff = Date.now() - RATE_WINDOW_MS;
+    return parsed.filter((e) => e.t > cutoff).length;
+  } catch {
+    return 0;
+  }
+}
+
+function recordSubmit() {
+  try {
+    const raw = localStorage.getItem(RATE_KEY);
+    const parsed = raw ? (JSON.parse(raw) as { t: number }[]) : [];
+    const cutoff = Date.now() - RATE_WINDOW_MS;
+    const next = [...parsed.filter((e) => e.t > cutoff), { t: Date.now() }];
+    localStorage.setItem(RATE_KEY, JSON.stringify(next));
+  } catch {
+    // ignore private-mode / blocked storage
+  }
+}
+
+function countLinks(text: string) {
+  return (text.match(/https?:\/\//gi) ?? []).length;
+}
+
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const mountedAt = useRef(0);
+
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -21,10 +73,26 @@ export function ContactForm() {
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    // Honeypot — bots fill this; humans leave it empty
-    if (String(data.get("company") ?? "").trim()) {
+    const company = String(data.get("company") ?? "").trim();
+    const honey = String(data.get("_honey") ?? "").trim();
+
+    // Honeypots — pretend success so scrapers think it worked
+    if (company || honey) {
       setStatus("sent");
       form.reset();
+      return;
+    }
+
+    if (readSubmitCount() >= RATE_MAX) {
+      setStatus("error");
+      setError("Too many messages from this browser. Please try again tomorrow.");
+      return;
+    }
+
+    const dwellMs = Date.now() - mountedAt.current;
+    if (dwellMs < MIN_DWELL_MS) {
+      setStatus("error");
+      setError("Please take a moment before sending.");
       return;
     }
 
@@ -38,7 +106,32 @@ export function ContactForm() {
       return;
     }
 
+    if (message.length > 4000) {
+      setStatus("error");
+      setError("Message is too long.");
+      return;
+    }
+
+    if (countLinks(message) > 3) {
+      setStatus("error");
+      setError("Please shorten the message and try again.");
+      return;
+    }
+
     try {
+      // Server IP rate limit + dwell check before hitting FormSubmit
+      const guard = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company: "", dwellMs }),
+      });
+      const guardPayload = (await guard.json()) as { error?: string };
+      if (!guard.ok) {
+        setStatus("error");
+        setError(guardPayload.error ?? "Could not send message. Try again later.");
+        return;
+      }
+
       const response = await fetch(FORMSUBMIT, {
         method: "POST",
         headers: {
@@ -53,6 +146,8 @@ export function ContactForm() {
           _subject: `Portfolio inquiry from ${name}`,
           _template: "table",
           _captcha: "false",
+          _honey: "",
+          _blacklist: BLACKLIST,
         }),
       });
 
@@ -79,6 +174,7 @@ export function ContactForm() {
         return;
       }
 
+      recordSubmit();
       setStatus("sent");
       form.reset();
     } catch {
@@ -100,9 +196,18 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex w-full max-w-md flex-col gap-1">
+      {/* Honeypots — hidden from people, tempting for bots */}
       <input
         type="text"
         name="company"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden
+        className="pointer-events-none absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
+      <input
+        type="text"
+        name="_honey"
         tabIndex={-1}
         autoComplete="off"
         aria-hidden
@@ -142,6 +247,7 @@ export function ContactForm() {
           required
           name="message"
           rows={3}
+          maxLength={4000}
           className={`${fieldClass} resize-none`}
           placeholder="Tell me about the role…"
         />

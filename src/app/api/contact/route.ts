@@ -1,17 +1,31 @@
 import { NextResponse } from "next/server";
 
 type Body = {
-  name?: string;
-  email?: string;
-  message?: string;
   company?: string;
+  /** ms since form was shown — bots often submit instantly */
+  dwellMs?: number;
 };
 
-type FormSubmitPayload = {
-  success?: string | boolean;
-  message?: string;
-};
+/** Soft per-instance limits (Vercel isolates vary; still blocks noisy bursts). */
+const hits = new Map<string, number[]>();
+const WINDOW_MS = 60 * 60 * 1000;
+const MAX_PER_WINDOW = 5;
+const MIN_DWELL_MS = 2500;
 
+function clientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
+  return request.headers.get("x-real-ip") ?? "unknown";
+}
+
+function prune(timestamps: number[], now: number) {
+  return timestamps.filter((t) => now - t < WINDOW_MS);
+}
+
+/**
+ * Pre-flight guard before the browser posts to FormSubmit.
+ * Honeypot + dwell time + IP rate limit.
+ */
 export async function POST(request: Request) {
   let body: Body;
   try {
@@ -20,92 +34,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const name = (body.name ?? "").trim();
-  const email = (body.email ?? "").trim();
-  const message = (body.message ?? "").trim();
-  // Honeypot — bots fill this; humans leave it empty
+  // Honeypot — bots that fill hidden fields get a fake success
   if ((body.company ?? "").trim()) {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, token: "ok" });
   }
 
-  if (!name || !email || !message) {
+  const dwellMs = Number(body.dwellMs ?? 0);
+  if (!Number.isFinite(dwellMs) || dwellMs < MIN_DWELL_MS) {
     return NextResponse.json(
-      { error: "Name, email, and message are required." },
-      { status: 400 },
+      { error: "Please take a moment before sending." },
+      { status: 429 },
     );
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
-  }
-
-  if (message.length > 5000) {
-    return NextResponse.json({ error: "Message is too long." }, { status: 400 });
-  }
-
-  const to = process.env.CONTACT_EMAIL;
-  if (!to) {
+  const ip = clientIp(request);
+  const now = Date.now();
+  const recent = prune(hits.get(ip) ?? [], now);
+  if (recent.length >= MAX_PER_WINDOW) {
     return NextResponse.json(
-      { error: "Contact form is not configured yet." },
-      { status: 503 },
+      { error: "Too many messages. Please try again later." },
+      { status: 429 },
     );
   }
+  recent.push(now);
+  hits.set(ip, recent);
 
-  const subject = `Portfolio inquiry from ${name}`;
-  const text = [`Name: ${name}`, `Email: ${email}`, "", message].join("\n");
-  const origin = "https://herbhosman.com";
-
-  // FormSubmit requires browser-like Origin and a one-time inbox activation
-  const response = await fetch(
-    `https://formsubmit.co/ajax/${encodeURIComponent(to)}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Origin: origin,
-        Referer: `${origin}/`,
-      },
-      body: JSON.stringify({
-        name,
-        email,
-        message: text,
-        _replyto: email,
-        _subject: subject,
-        _template: "table",
-        _captcha: "false",
-      }),
-    },
-  );
-
-  let payload: FormSubmitPayload | null = null;
-  try {
-    payload = (await response.json()) as FormSubmitPayload;
-  } catch {
-    payload = null;
-  }
-
-  const success =
-    payload?.success === true ||
-    payload?.success === "true" ||
-    (response.ok && payload?.success !== false && payload?.success !== "false");
-
-  if (!success) {
-    const detail = (payload?.message ?? "").toLowerCase();
-    if (detail.includes("activation") || detail.includes("activate")) {
-      return NextResponse.json(
-        {
-          error:
-            "Almost there — open the portfolio inbox and click FormSubmit’s “Activate Form” link (one-time), then send again.",
-        },
-        { status: 503 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Could not send message. Try again later." },
-      { status: 502 },
-    );
-  }
-
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, token: "ok" });
 }

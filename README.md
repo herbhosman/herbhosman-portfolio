@@ -37,10 +37,10 @@ The snap experience uses a FormSubmit-powered contact form (destination address 
 2. Open the portfolio inbox and click FormSubmit’s **Activate Form** link (one-time).
 3. Submissions will arrive as email after that.
 
+Spam controls: dual honeypots, minimum fill time, browser + IP rate limits, link flood check, and FormSubmit `_blacklist` phrases. AJAX can’t use FormSubmit’s reCAPTCHA, so those layers replace it.
+
 Optional override:
 
 ```bash
 NEXT_PUBLIC_FORMSUBMIT_ENDPOINT=https://formsubmit.co/ajax/you@example.com
 ```
-
-`CONTACT_EMAIL` on the server is unused for sending now (kept for possible future providers).
