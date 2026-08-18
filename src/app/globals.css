@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3f1ec;
+  --background-deep: #e7e3db;
+  --foreground: #1a1714;
+  --muted: #5c564e;
+  --line: rgba(26, 23, 20, 0.12);
+  --signal: #c45c26;
+  --sea: #3d6b7a;
+  --pacific: #243038;
+  --surface: #faf8f5;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-deep: var(--background-deep);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-signal: var(--signal);
+  --color-sea: var(--sea);
+  --color-pacific: var(--pacific);
+  --color-surface: var(--surface);
+  --font-display: var(--font-syne);
+  --font-body: var(--font-figtree);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--signal) 35%, white);
+  color: var(--foreground);
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scale(1.04);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes draw-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes signal-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.hero-rise {
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-rise-delay-1 {
+  animation-delay: 0.12s;
+}
+
+.hero-rise-delay-2 {
+  animation-delay: 0.24s;
+}
+
+.hero-rise-delay-3 {
+  animation-delay: 0.36s;
+}
+
+.hero-rise-delay-4 {
+  animation-delay: 0.48s;
+}
+
+.hero-rise-delay-5 {
+  animation-delay: 0.58s;
+}
+
+.mesh {
+  animation: drift 18s ease-in-out infinite;
+}
+
+.underline-draw {
+  transform-origin: left center;
+  animation: draw-line 1s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
+}
+
+.signal-ping {
+  animation: signal-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-rise-delay-1,
+  .hero-rise-delay-2,
+  .hero-rise-delay-3,
+  .hero-rise-delay-4,
+  .hero-rise-delay-5,
+  .mesh,
+  .underline-draw,
+  .signal-ping {
+    animation: none;
+  }
+}
