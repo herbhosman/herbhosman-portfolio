@@ -29,9 +29,12 @@ To roll back to the previous continuous page:
 export const PORTFOLIO_EXPERIENCE: "snap" | "classic" = "classic";
 ```
 
-## SEO
+## Contact form
 
-- Canonical URL `https://herbhosman.com`
-- Open Graph / Twitter cards
-- JSON-LD Person + ProfilePage
-- `/sitemap.xml` and `/robots.txt`
+The snap experience uses a contact form (no email shown on the page). Set a server-only env var:
+
+```bash
+CONTACT_EMAIL=you@example.com
+```
+
+Add the same variable in the Vercel project settings for production. First submission via FormSubmit may require confirming the inbox once.

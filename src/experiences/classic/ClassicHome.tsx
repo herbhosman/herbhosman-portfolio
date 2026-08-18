@@ -200,11 +200,11 @@ export function ClassicHome() {
                 Get in touch
               </p>
               <h2 className="mt-3 font-[family-name:var(--font-display)] text-[clamp(2rem,5vw,3.25rem)] font-bold leading-tight tracking-[-0.03em]">
-                Let&apos;s talk about what you&apos;re building.
+                Have an interesting role you think I&apos;d be a good fit for?
               </h2>
               <p className="mt-4 max-w-md text-base leading-relaxed text-white/70">
-                Open to full-time AEM Architect, Solution Architect, Engineering
-                Manager, or Director of Engineering roles—remote or hybrid.
+                Drop a note—I&apos;d love to hear about it. Full-time, remote or
+                hybrid.
               </p>
             </div>
             <div className="flex flex-col gap-4">

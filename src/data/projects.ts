@@ -112,10 +112,8 @@ export const recentBuilds: Project[] = [
 ];
 
 export const aboutParagraphs = [
-  "I build and lead Adobe Experience Manager programs end to end—most notably the Document Cloud web presence that put Acrobat at the center of how businesses create, share, and sign documents online.",
-  "AEM work is full-stack work. I ship against the platform APIs and the stack underneath them, and I’m Adobe Certified Expert for AEM Sites as both Developer and Business Practitioner.",
-  "On the open web, speed is part of the product. I bring a front-end craft focus—HTML, CSS, JavaScript, and today’s client tooling—so pages stay fast, responsive, and easy to find.",
-  "I’ve run delivery the Agile way for years and carry a Certified ScrumMaster credential from Scrum Alliance.",
+  "My path runs through Adobe Experience Manager. At Adobe I helped shape the Document Cloud web presence that put Acrobat at the center of how businesses create, share, and sign documents online. Since then I’ve partnered with remarkable companies—Pluralsight, Hoodoo, and Caesars—on high-traffic websites and Experience Cloud platforms.",
+  "AEM is full-stack work for me: platform APIs, the stack underneath, and the front end—so pages stay fast, responsive, and easy to find. I’m Adobe Certified Expert for AEM Sites as both Developer and Business Practitioner, and a Certified ScrumMaster.",
 ];
 
 export const snapshotFacts = [
@@ -132,7 +130,9 @@ export const certifications = [
 
 export const skillKeywords = [
   "Adobe Experience Manager",
+  "Adobe Experience Cloud",
   "AEM",
+  "Document Cloud",
   "JavaScript",
   "TypeScript",
   "React",

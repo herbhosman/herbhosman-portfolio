@@ -126,6 +126,75 @@ body {
   animation: signal-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Shared UI language */
+.nav-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--foreground);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.35rem;
+  background: var(--pacific);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition:
+    background-color 0.3s ease,
+    letter-spacing 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--foreground);
+  letter-spacing: 0.06em;
+}
+
+.btn-ghost {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--pacific) 75%, transparent);
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-ghost:hover {
+  color: var(--pacific);
+}
+
+.hero-atmosphere {
+  background-image:
+    radial-gradient(ellipse 90% 70% at 8% 12%, rgba(196, 92, 38, 0.13), transparent 52%),
+    radial-gradient(ellipse 70% 55% at 92% 78%, rgba(61, 107, 122, 0.14), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(36, 48, 56, 0.06), transparent 60%),
+    linear-gradient(165deg, #f8f5f0 0%, #f0ebe4 42%, #e6e0d6 100%);
+}
+
+.portrait-ring {
+  padding: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    145deg,
+    rgba(196, 92, 38, 0.55),
+    rgba(36, 48, 56, 0.15) 45%,
+    rgba(61, 107, 122, 0.35)
+  );
+  box-shadow: 0 24px 48px rgba(36, 48, 56, 0.18);
+}
+
+.portrait-ring > div {
+  box-shadow: inset 0 0 0 3px var(--background);
+}
+
 /* Scroll / section fade-ins */
 .reveal {
   opacity: 0;
@@ -185,7 +254,7 @@ body:has(.experience-snap) {
 }
 
 .project-carousel {
-  /* Programmatic moves use JS ease-out-quint; native snap still locks on release */
+  /* legacy hook — controlled carousel uses viewport/track below */
   scroll-behavior: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -195,114 +264,17 @@ body:has(.experience-snap) {
   display: none;
 }
 
-/* Peek carousel: side projects visible on wide screens */
-.project-carousel--peek {
-  gap: clamp(1rem, 3vw, 2.5rem);
-  padding-inline: max(1.25rem, calc((100% - min(780px, 72vw)) / 2));
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: max(1.25rem, calc((100% - min(780px, 72vw)) / 2));
+.project-carousel-viewport {
+  overflow: hidden;
+  user-select: none;
 }
 
-.project-slide {
-  --slide-scale: 0.86;
-  --slide-opacity: 0.38;
-  width: min(780px, 72vw);
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
-  /* Continuous scale while dragging — no CSS transition fighting the scroll */
-  transform: scale(var(--slide-scale));
-  opacity: var(--slide-opacity);
-  position: relative;
-  will-change: transform, opacity;
+.project-carousel-track {
+  will-change: transform;
 }
 
-.project-slide.is-active {
-  z-index: 2;
-}
-
-.project-slide.is-side .browser-frame {
-  transform: rotateY(-6deg) rotateX(4deg) !important;
-  filter: saturate(0.75);
-  transition:
-    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.55s ease;
-}
-
-.project-slide.is-active .browser-frame {
-  transform: rotateY(-8deg) rotateX(6deg) translateZ(8px);
-  filter: none;
-  transition:
-    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.55s ease;
-}
-
-/* Detail copy locks in after the slide settles (wine carousel text entrance) */
-@keyframes project-detail-lock {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.project-detail {
-  animation: project-detail-lock 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.drag-hint {
-  position: absolute;
-  left: 8%;
-  top: 42%;
-  z-index: 3;
-  display: none;
-  width: 3.25rem;
-  height: 3.25rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  backdrop-filter: blur(8px);
-  pointer-events: none;
-  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
-}
-
-@media (min-width: 900px) {
-  .drag-hint {
-    display: flex;
-  }
-}
-
-@media (max-width: 767px) {
-  .project-carousel--peek {
-    gap: 0;
-    padding-inline: 0;
-    scroll-padding-inline: 0;
-  }
-
-  .project-slide {
-    width: 100%;
-  }
-
-  .project-slide.is-side {
-    --slide-opacity: 0 !important;
-    pointer-events: none;
-  }
-
-  .project-slide.is-active .browser-frame {
-    transform: rotateY(-3deg) rotateX(4deg);
-  }
-
-  .project-slide .browser-stage {
-    width: min(920px, calc(100% - 2rem));
-  }
+.project-carousel-slide {
+  box-sizing: border-box;
 }
 
 /* 3D product-style browser chrome for project screenshots */
@@ -363,16 +335,10 @@ body:has(.experience-snap) {
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.browser-stage:hover .browser-frame {
-  transform: rotateY(-4deg) rotateX(4deg) translateZ(12px);
-}
-
-.project-slide.is-active .browser-stage:hover .browser-frame {
-  transform: rotateY(-3deg) rotateX(3deg) translateZ(16px);
-}
-
-.project-slide.is-side .browser-stage:hover .browser-frame {
-  transform: rotateY(-6deg) rotateX(4deg);
+@media (min-width: 768px) {
+  .browser-stage:hover .browser-frame {
+    transform: rotateY(-4deg) rotateX(4deg) translateZ(12px);
+  }
 }
 
 .browser-chrome {
@@ -448,14 +414,22 @@ body:has(.experience-snap) {
   transform: translateZ(1px);
 }
 
-@media (max-width: 640px) {
-  .browser-frame {
-    transform: rotateY(-4deg) rotateX(5deg);
-    border-radius: 12px;
+@media (max-width: 767px) {
+  .browser-stage {
+    perspective: none;
   }
 
-  .browser-stage:hover .browser-frame {
-    transform: rotateY(-2deg) rotateX(3deg);
+  .browser-glow,
+  .browser-shadow {
+    display: none;
+  }
+
+  .browser-frame {
+    transform: none;
+    border-radius: 10px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.1) inset,
+      0 16px 40px rgba(0, 0, 0, 0.4);
   }
 
   .browser-chrome {
@@ -492,6 +466,8 @@ body:has(.experience-snap) {
   .bento-rise,
   .project-detail {
     animation: none;
+    opacity: 1;
+    transform: none;
   }
 
   .reveal {
