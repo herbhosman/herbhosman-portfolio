@@ -35,18 +35,17 @@ export function SocialLinks({
 }: {
   tone?: "dark" | "light";
   showGitHub?: boolean;
+  /** @deprecated All social links are borderless; kept for call-site compat */
   bare?: boolean;
 }) {
-  const linkClass = bare
-    ? tone === "light"
-      ? "inline-flex items-center justify-center text-white/80 transition-colors hover:text-white"
-      : "inline-flex items-center justify-center text-foreground/70 transition-colors hover:text-foreground"
-    : tone === "light"
-      ? "inline-flex h-10 w-10 items-center justify-center border border-white/30 text-white transition-colors hover:border-white hover:bg-white/10"
-      : "inline-flex h-10 w-10 items-center justify-center border border-foreground/20 text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-white";
+  void bare;
+  const linkClass =
+    tone === "light"
+      ? "inline-flex items-center justify-center text-white/55 transition-colors duration-300 hover:text-white"
+      : "inline-flex items-center justify-center text-foreground/45 transition-colors duration-300 hover:text-foreground";
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-5">
       <a
         href="https://linkedin.com/in/herbhosman"
         target="_blank"
@@ -54,7 +53,7 @@ export function SocialLinks({
         className={linkClass}
         aria-label="LinkedIn profile"
       >
-        <LinkedInIcon className="h-4 w-4" />
+        <LinkedInIcon className="h-[1.125rem] w-[1.125rem]" />
       </a>
       {showGitHub ? (
         <a
@@ -64,7 +63,7 @@ export function SocialLinks({
           className={linkClass}
           aria-label="GitHub profile"
         >
-          <GitHubIcon className="h-4 w-4" />
+          <GitHubIcon className="h-[1.125rem] w-[1.125rem]" />
         </a>
       ) : null}
     </div>

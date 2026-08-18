@@ -126,7 +126,359 @@ body {
   animation: signal-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Scroll / section fade-ins */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal--in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-nav {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.bento-rise {
+  opacity: 0;
+  animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.bento-rise-1 {
+  animation-delay: 0.06s;
+}
+.bento-rise-2 {
+  animation-delay: 0.14s;
+}
+.bento-rise-3 {
+  animation-delay: 0.22s;
+}
+.bento-rise-4 {
+  animation-delay: 0.3s;
+}
+.bento-rise-5 {
+  animation-delay: 0.38s;
+}
+
+/* Snap experience (full-viewport section lock + project carousel) */
+html:has(.experience-snap),
+body:has(.experience-snap) {
+  height: 100%;
+  overflow: hidden;
+}
+
+.experience-snap {
+  scroll-snap-type: y mandatory;
+  /* Soft settle between full-screen sections */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.experience-snap .snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.project-carousel {
+  /* Programmatic moves use JS ease-out-quint; native snap still locks on release */
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.project-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Peek carousel: side projects visible on wide screens */
+.project-carousel--peek {
+  gap: clamp(1rem, 3vw, 2.5rem);
+  padding-inline: max(1.25rem, calc((100% - min(780px, 72vw)) / 2));
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: max(1.25rem, calc((100% - min(780px, 72vw)) / 2));
+}
+
+.project-slide {
+  --slide-scale: 0.86;
+  --slide-opacity: 0.38;
+  width: min(780px, 72vw);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  /* Continuous scale while dragging — no CSS transition fighting the scroll */
+  transform: scale(var(--slide-scale));
+  opacity: var(--slide-opacity);
+  position: relative;
+  will-change: transform, opacity;
+}
+
+.project-slide.is-active {
+  z-index: 2;
+}
+
+.project-slide.is-side .browser-frame {
+  transform: rotateY(-6deg) rotateX(4deg) !important;
+  filter: saturate(0.75);
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.55s ease;
+}
+
+.project-slide.is-active .browser-frame {
+  transform: rotateY(-8deg) rotateX(6deg) translateZ(8px);
+  filter: none;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.55s ease;
+}
+
+/* Detail copy locks in after the slide settles (wine carousel text entrance) */
+@keyframes project-detail-lock {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.project-detail {
+  animation: project-detail-lock 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.drag-hint {
+  position: absolute;
+  left: 8%;
+  top: 42%;
+  z-index: 3;
+  display: none;
+  width: 3.25rem;
+  height: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+
+@media (min-width: 900px) {
+  .drag-hint {
+    display: flex;
+  }
+}
+
+@media (max-width: 767px) {
+  .project-carousel--peek {
+    gap: 0;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
+  }
+
+  .project-slide {
+    width: 100%;
+  }
+
+  .project-slide.is-side {
+    --slide-opacity: 0 !important;
+    pointer-events: none;
+  }
+
+  .project-slide.is-active .browser-frame {
+    transform: rotateY(-3deg) rotateX(4deg);
+  }
+
+  .project-slide .browser-stage {
+    width: min(920px, calc(100% - 2rem));
+  }
+}
+
+/* 3D product-style browser chrome for project screenshots */
+.browser-stage {
+  --browser-accent: #c45c26;
+  position: relative;
+  margin-inline: auto;
+  width: min(920px, 100%);
+  perspective: 1600px;
+  perspective-origin: 50% 40%;
+}
+
+.browser-glow {
+  position: absolute;
+  inset: 12% 8% auto;
+  height: 55%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--browser-accent) 55%, transparent) 0%,
+    transparent 70%
+  );
+  filter: blur(28px);
+  transform: translateZ(-40px);
+  pointer-events: none;
+}
+
+.browser-shadow {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -6%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    rgba(0, 0, 0, 0.55) 0%,
+    transparent 70%
+  );
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.browser-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #2a2a2c 0%, #1a1a1c 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.35) inset,
+    0 30px 60px rgba(0, 0, 0, 0.45),
+    0 8px 20px rgba(0, 0, 0, 0.35),
+    12px 18px 0 -2px rgba(0, 0, 0, 0.18);
+  transform: rotateY(-10deg) rotateX(8deg) translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.browser-stage:hover .browser-frame {
+  transform: rotateY(-4deg) rotateX(4deg) translateZ(12px);
+}
+
+.project-slide.is-active .browser-stage:hover .browser-frame {
+  transform: rotateY(-3deg) rotateX(3deg) translateZ(16px);
+}
+
+.project-slide.is-side .browser-stage:hover .browser-frame {
+  transform: rotateY(-6deg) rotateX(4deg);
+}
+
+.browser-chrome {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  background: linear-gradient(180deg, #3a3a3e 0%, #2c2c30 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+.browser-traffic {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.browser-traffic span {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 999px;
+  box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.25);
+}
+
+.browser-traffic span:nth-child(1) {
+  background: #ff5f57;
+}
+
+.browser-traffic span:nth-child(2) {
+  background: #febc2e;
+}
+
+.browser-traffic span:nth-child(3) {
+  background: #28c840;
+}
+
+.browser-address {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.browser-lock {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.browser-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.browser-chrome-spacer {
+  width: 3.2rem;
+}
+
+.browser-viewport {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #0f0f10;
+  overflow: hidden;
+  transform: translateZ(1px);
+}
+
+@media (max-width: 640px) {
+  .browser-frame {
+    transform: rotateY(-4deg) rotateX(5deg);
+    border-radius: 12px;
+  }
+
+  .browser-stage:hover .browser-frame {
+    transform: rotateY(-2deg) rotateX(3deg);
+  }
+
+  .browser-chrome {
+    gap: 0.5rem;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .browser-chrome-spacer {
+    width: 0.5rem;
+  }
+
+  .browser-viewport {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .browser-frame,
+  .browser-stage:hover .browser-frame {
+    transform: none;
+    transition: none;
+  }
+
   .hero-rise,
   .hero-rise-delay-1,
   .hero-rise-delay-2,
@@ -135,7 +487,32 @@ body {
   .hero-rise-delay-5,
   .mesh,
   .underline-draw,
-  .signal-ping {
+  .signal-ping,
+  .reveal-nav,
+  .bento-rise,
+  .project-detail {
     animation: none;
   }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .experience-snap {
+    scroll-snap-type: none;
+  }
+
+  .project-carousel {
+    scroll-snap-type: none;
+  }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .project-carousel {
+    scroll-snap-type: x mandatory;
+  }
+}
+
+/* Snap hero is freeform — old bento grid removed */
