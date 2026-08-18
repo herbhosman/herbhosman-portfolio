@@ -31,10 +31,16 @@ export const PORTFOLIO_EXPERIENCE: "snap" | "classic" = "classic";
 
 ## Contact form
 
-The snap experience uses a contact form (no email shown on the page). Set a server-only env var:
+The snap experience uses a FormSubmit-powered contact form (destination address is not shown on the page).
+
+1. Submit the form once from the live site (or locally).
+2. Open the portfolio inbox and click FormSubmit’s **Activate Form** link (one-time).
+3. Submissions will arrive as email after that.
+
+Optional override:
 
 ```bash
-CONTACT_EMAIL=you@example.com
+NEXT_PUBLIC_FORMSUBMIT_ENDPOINT=https://formsubmit.co/ajax/you@example.com
 ```
 
-Add the same variable in the Vercel project settings for production. First submission via FormSubmit may require confirming the inbox once.
+`CONTACT_EMAIL` on the server is unused for sending now (kept for possible future providers).

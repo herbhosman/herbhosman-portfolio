@@ -4,6 +4,11 @@ import { FormEvent, useState } from "react";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
+/** FormSubmit ajax endpoint — destination stays off the visible page */
+const FORMSUBMIT =
+  process.env.NEXT_PUBLIC_FORMSUBMIT_ENDPOINT ??
+  "https://formsubmit.co/ajax/hahosman@gmail.com";
+
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -16,23 +21,64 @@ export function ContactForm() {
     const form = event.currentTarget;
     const data = new FormData(form);
 
+    // Honeypot — bots fill this; humans leave it empty
+    if (String(data.get("company") ?? "").trim()) {
+      setStatus("sent");
+      form.reset();
+      return;
+    }
+
+    const name = String(data.get("name") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    const message = String(data.get("message") ?? "").trim();
+
+    if (!name || !email || !message) {
+      setStatus("error");
+      setError("Name, email, and message are required.");
+      return;
+    }
+
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch(FORMSUBMIT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({
-          name: data.get("name"),
-          email: data.get("email"),
-          message: data.get("message"),
-          company: data.get("company"),
+          name,
+          email,
+          message,
+          _replyto: email,
+          _subject: `Portfolio inquiry from ${name}`,
+          _template: "table",
+          _captcha: "false",
         }),
       });
-      const payload = (await response.json()) as { error?: string };
-      if (!response.ok) {
+
+      const payload = (await response.json()) as {
+        success?: string | boolean;
+        message?: string;
+      };
+
+      const ok =
+        payload.success === true ||
+        payload.success === "true" ||
+        (response.ok &&
+          payload.success !== false &&
+          payload.success !== "false");
+
+      if (!ok) {
+        const detail = (payload.message ?? "").toLowerCase();
         setStatus("error");
-        setError(payload.error ?? "Something went wrong.");
+        setError(
+          detail.includes("activation") || detail.includes("activate")
+            ? "Almost there — check the portfolio inbox for FormSubmit’s “Activate Form” email, click it once, then send again."
+            : (payload.message ?? "Could not send message. Try again later."),
+        );
         return;
       }
+
       setStatus("sent");
       form.reset();
     } catch {
