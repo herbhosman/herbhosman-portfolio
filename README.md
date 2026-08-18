@@ -1,6 +1,6 @@
 # Herb Hosman Portfolio
 
-Custom personal portfolio for selected websites and shipped work.
+Personal site: [https://herbhosman.com](https://herbhosman.com)
 
 ## Local
 
@@ -13,4 +13,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Stack
 
-Next.js · Tailwind CSS · TypeScript
+Next.js · Tailwind CSS · TypeScript · Vercel
+
+## SEO
+
+- Canonical URL `https://herbhosman.com`
+- Open Graph / Twitter cards
+- JSON-LD Person + ProfilePage
+- `/sitemap.xml` and `/robots.txt`

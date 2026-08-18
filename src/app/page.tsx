@@ -46,23 +46,18 @@ export default function Home() {
           </nav>
 
           <div className="flex w-full max-w-3xl flex-col gap-5 sm:flex-row sm:items-end sm:gap-8">
-            <div className="flex items-end gap-4 sm:block">
-              <ProfilePhoto />
-              <p className="min-w-0 flex-1 font-[family-name:var(--font-display)] text-[clamp(1.85rem,8.5vw,2.4rem)] font-extrabold leading-[0.95] tracking-[-0.03em] text-foreground sm:hidden">
-                Herb Hosman
-              </p>
-            </div>
+            <ProfilePhoto />
 
             <div className="min-w-0 flex-1">
-              <p className="hero-rise hero-rise-delay-1 hidden font-[family-name:var(--font-display)] text-[clamp(2.75rem,8vw,5rem)] font-extrabold leading-[0.92] tracking-[-0.05em] text-foreground sm:block">
+              <h1 className="hero-rise hero-rise-delay-1 font-[family-name:var(--font-display)] text-[clamp(2rem,8vw,5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-foreground sm:leading-[0.92] sm:tracking-[-0.05em]">
                 Herb Hosman
-              </p>
+              </h1>
 
               <AvailabilitySignal />
 
-              <h1 className="hero-rise hero-rise-delay-2 mt-5 max-w-xl font-[family-name:var(--font-display)] text-[clamp(1.15rem,4.2vw,1.85rem)] font-semibold leading-snug tracking-[-0.02em] text-foreground sm:mt-6">
+              <p className="hero-rise hero-rise-delay-2 mt-5 max-w-xl font-[family-name:var(--font-display)] text-[clamp(1.15rem,4.2vw,1.85rem)] font-semibold leading-snug tracking-[-0.02em] text-foreground sm:mt-6">
                 AEM architect. Full-stack practitioner. Fast web experiences.
-              </h1>
+              </p>
 
               <p className="hero-rise hero-rise-delay-3 mt-3 max-w-md text-[0.95rem] leading-relaxed text-muted sm:mt-4 sm:text-base">
                 Ventura, CA · 12+ years shipping Adobe Experience Manager
