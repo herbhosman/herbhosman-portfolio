@@ -7,6 +7,11 @@ type Body = {
   company?: string;
 };
 
+type FormSubmitPayload = {
+  success?: string | boolean;
+  message?: string;
+};
+
 export async function POST(request: Request) {
   let body: Body;
   try {
@@ -47,31 +52,55 @@ export async function POST(request: Request) {
   }
 
   const subject = `Portfolio inquiry from ${name}`;
-  const text = [
-    `Name: ${name}`,
-    `Email: ${email}`,
-    "",
-    message,
-  ].join("\n");
+  const text = [`Name: ${name}`, `Email: ${email}`, "", message].join("\n");
+  const origin = "https://herbhosman.com";
 
-  // FormSubmit keeps the destination address on the server only (not in page HTML)
-  const response = await fetch(`https://formsubmit.co/ajax/${to}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+  // FormSubmit requires browser-like Origin and a one-time inbox activation
+  const response = await fetch(
+    `https://formsubmit.co/ajax/${encodeURIComponent(to)}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Origin: origin,
+        Referer: `${origin}/`,
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        message: text,
+        _replyto: email,
+        _subject: subject,
+        _template: "table",
+        _captcha: "false",
+      }),
     },
-    body: JSON.stringify({
-      name,
-      email,
-      message: text,
-      _subject: subject,
-      _template: "table",
-      _captcha: "false",
-    }),
-  });
+  );
 
-  if (!response.ok) {
+  let payload: FormSubmitPayload | null = null;
+  try {
+    payload = (await response.json()) as FormSubmitPayload;
+  } catch {
+    payload = null;
+  }
+
+  const success =
+    payload?.success === true ||
+    payload?.success === "true" ||
+    (response.ok && payload?.success !== false && payload?.success !== "false");
+
+  if (!success) {
+    const detail = (payload?.message ?? "").toLowerCase();
+    if (detail.includes("activation") || detail.includes("activate")) {
+      return NextResponse.json(
+        {
+          error:
+            "Almost there — open the portfolio inbox and click FormSubmit’s “Activate Form” link (one-time), then send again.",
+        },
+        { status: 503 },
+      );
+    }
     return NextResponse.json(
       { error: "Could not send message. Try again later." },
       { status: 502 },
