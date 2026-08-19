@@ -514,11 +514,10 @@ export function ProjectCarousel({ projects }: Props) {
                       src={project.image}
                       alt={project.imageAlt ?? `${project.name} screenshot`}
                       urlLabel={
-                        project.href
-                          ? project.hrefLabel
-                          : project.note?.toLowerCase() === "retired"
-                            ? "acrobat.adobe.com"
-                            : "internal"
+                        project.hrefLabel ||
+                        (project.note?.toLowerCase() === "retired"
+                          ? "acrobat.adobe.com"
+                          : "internal")
                       }
                       accent={project.accent}
                       note={project.note}

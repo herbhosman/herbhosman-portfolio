@@ -61,7 +61,7 @@ export const projects: Project[] = [
     name: "Walmart",
     role: "Solution Architect · Hoodoo Digital",
     blurb: "Internal employee-facing portal—platform, authoring, and integrations.",
-    hrefLabel: "Internal",
+    hrefLabel: "walmart.com",
     stack: ["AEM", "Enterprise CMS"],
     accent: "#0071CE",
     image: "/work/walmart.jpg",
