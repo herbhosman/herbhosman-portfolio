@@ -368,75 +368,35 @@ export function ProjectCarousel({ projects }: Props) {
       </p>
 
       <div className="relative z-20 shrink-0 px-5 pt-5 sm:px-10 sm:pt-8">
-        <div className="flex items-start justify-between gap-3 sm:items-end sm:gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="font-[family-name:var(--font-display)] text-[1.35rem] font-bold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
-              Sites I&apos;ve worked on
-            </p>
-            <p className="mt-1 text-sm text-white/55 sm:text-white/40">
-              <span className="sm:hidden">Swipe to browse</span>
-              <span className="hidden sm:inline">
-                Scroll or swipe through shipped sites
-              </span>
-            </p>
-          </div>
-          <div className="flex shrink-0 items-center gap-1 sm:gap-3 sm:pb-0.5">
-            <p className="hidden font-[family-name:var(--font-display)] text-sm tracking-wide text-white/50 sm:block">
-              {String(index + 1).padStart(2, "0")}
-              <span className="mx-2 text-white/20">—</span>
-              {String(projects.length).padStart(2, "0")}
-            </p>
-            <div className="hidden h-px w-14 overflow-hidden bg-white/10 sm:block sm:w-20">
-              <div
-                className="h-px bg-signal transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                style={{
-                  width: `${((index + 1) / projects.length) * 100}%`,
-                }}
-              />
-            </div>
-            <div className="flex items-center">
-              <button
-                type="button"
-                aria-label="Previous project"
-                disabled={index === 0}
-                onClick={() => goTo(index - 1)}
-                className="flex h-9 w-9 items-center justify-center text-lg text-white/65 transition-colors duration-300 hover:text-white disabled:opacity-25 sm:h-auto sm:w-auto sm:px-2 sm:py-1 sm:text-lg sm:text-white/40"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                aria-label="Next project"
-                disabled={index === projects.length - 1}
-                onClick={() => goTo(index + 1)}
-                className="flex h-9 w-9 items-center justify-center text-lg text-white/65 transition-colors duration-300 hover:text-white disabled:opacity-25 sm:h-auto sm:w-auto sm:px-2 sm:py-1 sm:text-lg sm:text-white/40"
-              >
-                →
-              </button>
-            </div>
-          </div>
-        </div>
+        <p className="font-[family-name:var(--font-display)] text-[1.35rem] font-bold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
+          Sites I&apos;ve worked on
+        </p>
+        <p className="mt-1 text-sm text-white/55 sm:text-white/40">
+          <span className="sm:hidden">Swipe to browse</span>
+          <span className="hidden sm:inline">
+            Scroll or swipe through shipped sites
+          </span>
+        </p>
+      </div>
 
-        {/* Mobile page dots */}
-        <div
-          className="mt-3 flex items-center justify-center gap-1.5 sm:hidden"
-          role="tablist"
-          aria-label="Project pages"
-        >
-          {projects.map((project, i) => (
-            <button
-              key={project.name}
-              type="button"
-              role="tab"
-              aria-label={`Show ${project.name}`}
-              aria-selected={i === index}
-              onClick={() => goTo(i)}
-              className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
-                i === index ? "w-5 bg-signal" : "w-1.5 bg-white/30"
-              }`}
-            />
-          ))}
-        </div>
+      <div
+        className="relative z-20 flex shrink-0 items-center justify-center gap-1.5 px-5 pb-2.5 pt-3 sm:px-10 sm:pb-3 sm:pt-4"
+        role="tablist"
+        aria-label="Project pages"
+      >
+        {projects.map((project, i) => (
+          <button
+            key={project.name}
+            type="button"
+            role="tab"
+            aria-label={`Show ${project.name}`}
+            aria-selected={i === index}
+            onClick={() => goTo(i)}
+            className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
+              i === index ? "w-5 bg-signal" : "w-1.5 bg-white/30 hover:bg-white/45"
+            }`}
+          />
+        ))}
       </div>
 
       <div
@@ -447,7 +407,7 @@ export function ProjectCarousel({ projects }: Props) {
         aria-label="Project carousel"
       >
         <div
-          className="project-carousel-track flex h-full items-center"
+          className="project-carousel-track flex h-full items-start pt-1 sm:items-center sm:pt-0"
           style={{
             gap: peek ? gap : 0,
             transform: `translate3d(${offsetX}px, 0, 0)`,

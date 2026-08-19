@@ -60,13 +60,13 @@ export const projects: Project[] = [
   {
     name: "Walmart",
     role: "Solution Architect · Hoodoo Digital",
-    blurb: "High-traffic retail experiences on walmart.com.",
-    href: "https://www.walmart.com/",
-    hrefLabel: "walmart.com",
+    blurb: "Internal employee-facing portal—platform, authoring, and integrations.",
+    hrefLabel: "Internal",
     stack: ["AEM", "Enterprise CMS"],
     accent: "#0071CE",
     image: "/work/walmart.jpg",
-    imageAlt: "Walmart homepage with delivery and returns hero",
+    imageAlt: "Walmart employee portal experience",
+    note: "Private",
   },
   {
     name: "Pluralsight",
