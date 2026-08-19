@@ -54,11 +54,21 @@ function ProjectCopy({ project }: { project: Project }) {
 }
 
 function layoutFor(width: number) {
-  const peek = width >= 900;
-  const slideW = peek ? Math.min(width * 0.7, 860) : width;
-  const gap = peek ? 48 : 0;
-  const pad = peek ? (width - slideW) / 2 : 0;
-  return { peek, slideW, gap, pad, stride: slideW + gap };
+  // Desktop: wide peek of neighbors
+  if (width >= 900) {
+    const slideW = Math.min(width * 0.7, 860);
+    const gap = 48;
+    const pad = (width - slideW) / 2;
+    return { peek: true, slideW, gap, pad, stride: slideW + gap };
+  }
+  // Mobile / tablet: slight edge peek so swipe is obvious
+  if (width > 0) {
+    const slideW = width * 0.86;
+    const gap = 14;
+    const pad = (width - slideW) / 2;
+    return { peek: true, slideW, gap, pad, stride: slideW + gap };
+  }
+  return { peek: false, slideW: 1, gap: 0, pad: 0, stride: 1 };
 }
 
 export function ProjectCarousel({ projects }: Props) {
@@ -335,6 +345,7 @@ export function ProjectCarousel({ projects }: Props) {
 
   const { peek, slideW, gap, pad, stride } = layoutFor(width || 1);
   const offsetX = width > 0 ? pad - index * stride + dragPx : 0;
+  const wide = width >= 900;
 
   return (
     <div
@@ -356,49 +367,75 @@ export function ProjectCarousel({ projects }: Props) {
         Work
       </p>
 
-      <div className="relative z-20 flex shrink-0 items-end justify-between gap-4 px-5 pt-6 sm:px-10 sm:pt-8">
-        <div>
-          <p className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-[-0.03em] text-white sm:text-3xl">
-            Sites I&apos;ve worked on
-          </p>
-          <p className="mt-1 text-sm text-white/40">
-            Scroll or swipe through shipped sites
-          </p>
+      <div className="relative z-20 shrink-0 px-5 pt-6 sm:px-10 sm:pt-8">
+        <div className="flex items-end justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-[-0.03em] text-white sm:text-3xl">
+              Sites I&apos;ve worked on
+            </p>
+            <p className="mt-1 text-sm text-white/55 sm:text-white/40">
+              <span className="sm:hidden">Swipe to browse sites</span>
+              <span className="hidden sm:inline">
+                Scroll or swipe through shipped sites
+              </span>
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2 pb-0.5 sm:gap-3">
+            <p className="font-[family-name:var(--font-display)] text-sm tracking-wide text-white/50">
+              {String(index + 1).padStart(2, "0")}
+              <span className="mx-1.5 text-white/20 sm:mx-2">—</span>
+              {String(projects.length).padStart(2, "0")}
+            </p>
+            <div className="hidden h-px w-14 overflow-hidden bg-white/10 sm:block sm:w-20">
+              <div
+                className="h-px bg-signal transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{
+                  width: `${((index + 1) / projects.length) * 100}%`,
+                }}
+              />
+            </div>
+            <div className="flex items-center gap-0.5">
+              <button
+                type="button"
+                aria-label="Previous project"
+                disabled={index === 0}
+                onClick={() => goTo(index - 1)}
+                className="flex h-10 w-10 items-center justify-center text-xl text-white/70 transition-colors duration-300 hover:text-white disabled:opacity-25 sm:h-auto sm:w-auto sm:px-2 sm:py-1 sm:text-lg sm:text-white/40"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                aria-label="Next project"
+                disabled={index === projects.length - 1}
+                onClick={() => goTo(index + 1)}
+                className="flex h-10 w-10 items-center justify-center text-xl text-white/70 transition-colors duration-300 hover:text-white disabled:opacity-25 sm:h-auto sm:w-auto sm:px-2 sm:py-1 sm:text-lg sm:text-white/40"
+              >
+                →
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-3 pb-0.5">
-          <p className="font-[family-name:var(--font-display)] text-sm tracking-wide text-white/50">
-            {String(index + 1).padStart(2, "0")}
-            <span className="mx-2 text-white/20">—</span>
-            {String(projects.length).padStart(2, "0")}
-          </p>
-          <div className="hidden h-px w-14 overflow-hidden bg-white/10 sm:block sm:w-20">
-            <div
-              className="h-px bg-signal transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-              style={{
-                width: `${((index + 1) / projects.length) * 100}%`,
-              }}
+
+        {/* Mobile page dots — clear “more slides” signal */}
+        <div
+          className="mt-4 flex items-center justify-center gap-2 sm:hidden"
+          role="tablist"
+          aria-label="Project pages"
+        >
+          {projects.map((project, i) => (
+            <button
+              key={project.name}
+              type="button"
+              role="tab"
+              aria-label={`Show ${project.name}`}
+              aria-selected={i === index}
+              onClick={() => goTo(i)}
+              className={`h-2 rounded-full transition-[width,background-color] duration-300 ${
+                i === index ? "w-7 bg-signal" : "w-2 bg-white/30"
+              }`}
             />
-          </div>
-          <div className="flex items-center">
-            <button
-              type="button"
-              aria-label="Previous project"
-              disabled={index === 0}
-              onClick={() => goTo(index - 1)}
-              className="px-2 py-1 text-lg text-white/40 transition-colors duration-300 hover:text-white disabled:opacity-20"
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              aria-label="Next project"
-              disabled={index === projects.length - 1}
-              onClick={() => goTo(index + 1)}
-              className="px-2 py-1 text-lg text-white/40 transition-colors duration-300 hover:text-white disabled:opacity-20"
-            >
-              →
-            </button>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -429,18 +466,20 @@ export function ProjectCarousel({ projects }: Props) {
             const isEmerging =
               dragging && i === index + toward && dist === 1;
             const side = dist >= 1;
+            const sideScale = wide ? 0.86 : 0.94;
+            const sideOpacity = wide ? 0.4 : 0.55;
             const scale =
               !peek || !side
                 ? 1
                 : isEmerging
-                  ? 0.86 + 0.1 * dragBias
-                  : 0.86;
+                  ? sideScale + (1 - sideScale) * 0.7 * dragBias
+                  : sideScale;
             const opacity =
               !peek || !side
                 ? 1
                 : isEmerging
-                  ? 0.4 + 0.45 * dragBias
-                  : 0.4;
+                  ? sideOpacity + (1 - sideOpacity) * 0.7 * dragBias
+                  : sideOpacity;
             const showCopy = i === copyIndex;
 
             return (
@@ -461,9 +500,7 @@ export function ProjectCarousel({ projects }: Props) {
                   zIndex: i === index ? 2 : 1,
                 }}
               >
-                <div
-                  className={`mx-auto w-full ${peek ? "" : "max-w-4xl px-5 sm:px-10"}`}
-                >
+                <div className={`mx-auto w-full ${wide ? "" : "px-2.5"}`}>
                   <BrowserFrame
                     src={project.image}
                     alt={project.imageAlt ?? `${project.name} screenshot`}
