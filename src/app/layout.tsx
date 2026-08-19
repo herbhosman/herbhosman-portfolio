@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Figtree, Syne } from "next/font/google";
+import { Figtree, Manrope } from "next/font/google";
 import { JsonLd } from "@/components/JsonLd";
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-syne",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
 });
@@ -97,7 +97,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${syne.variable} ${figtree.variable} h-full antialiased`}
+      className={`${manrope.variable} ${figtree.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background font-[family-name:var(--font-body)] text-foreground">
         <JsonLd />
