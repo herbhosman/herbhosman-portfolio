@@ -14,17 +14,17 @@ const SNAP_MS = 720;
 
 function ProjectCopy({ project }: { project: Project }) {
   return (
-    <div className="mt-5 px-0.5 sm:mt-6">
-      <p className="text-[0.7rem] uppercase tracking-[0.14em] text-white/40">
+    <div className="mt-4 px-0.5 sm:mt-6">
+      <p className="text-[0.65rem] uppercase tracking-[0.14em] text-white/40 sm:text-[0.7rem]">
         {project.role}
       </p>
-      <h2 className="mt-2 font-[family-name:var(--font-display)] text-[clamp(1.6rem,4.5vw,2.6rem)] font-bold tracking-[-0.035em] text-white">
+      <h2 className="mt-1.5 font-[family-name:var(--font-display)] text-[clamp(1.45rem,4.5vw,2.6rem)] font-bold tracking-[-0.035em] text-white sm:mt-2">
         {project.name}
       </h2>
-      <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/60 sm:text-base">
+      <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-white/60 sm:mt-2 sm:text-base">
         {project.blurb}
       </p>
-      <p className="mt-3 text-[0.7rem] tracking-wide text-white/35">
+      <p className="mt-2 text-[0.7rem] tracking-wide text-white/35 sm:mt-3">
         {project.stack.join(" · ")}
       </p>
       {project.href ? (
@@ -32,7 +32,7 @@ function ProjectCopy({ project }: { project: Project }) {
           href={project.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white/90 transition-opacity duration-300 hover:opacity-70"
+          className="group mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white/90 transition-opacity duration-300 hover:opacity-70 sm:mt-5"
           onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => event.stopPropagation()}
         >
@@ -45,7 +45,7 @@ function ProjectCopy({ project }: { project: Project }) {
           </span>
         </a>
       ) : (
-        <p className="mt-5 text-sm font-semibold text-white/40">
+        <p className="mt-4 text-sm font-semibold text-white/40 sm:mt-5">
           {project.hrefLabel}
         </p>
       )}
@@ -63,8 +63,8 @@ function layoutFor(width: number) {
   }
   // Mobile / tablet: slight edge peek so swipe is obvious
   if (width > 0) {
-    const slideW = width * 0.86;
-    const gap = 14;
+    const slideW = width * 0.9;
+    const gap = 10;
     const pad = (width - slideW) / 2;
     return { peek: true, slideW, gap, pad, stride: slideW + gap };
   }
@@ -367,23 +367,23 @@ export function ProjectCarousel({ projects }: Props) {
         Work
       </p>
 
-      <div className="relative z-20 shrink-0 px-5 pt-6 sm:px-10 sm:pt-8">
-        <div className="flex items-end justify-between gap-4">
-          <div className="min-w-0">
-            <p className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-[-0.03em] text-white sm:text-3xl">
+      <div className="relative z-20 shrink-0 px-5 pt-5 sm:px-10 sm:pt-8">
+        <div className="flex items-start justify-between gap-3 sm:items-end sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="font-[family-name:var(--font-display)] text-[1.35rem] font-bold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
               Sites I&apos;ve worked on
             </p>
             <p className="mt-1 text-sm text-white/55 sm:text-white/40">
-              <span className="sm:hidden">Swipe to browse sites</span>
+              <span className="sm:hidden">Swipe to browse</span>
               <span className="hidden sm:inline">
                 Scroll or swipe through shipped sites
               </span>
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2 pb-0.5 sm:gap-3">
-            <p className="font-[family-name:var(--font-display)] text-sm tracking-wide text-white/50">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3 sm:pb-0.5">
+            <p className="hidden font-[family-name:var(--font-display)] text-sm tracking-wide text-white/50 sm:block">
               {String(index + 1).padStart(2, "0")}
-              <span className="mx-1.5 text-white/20 sm:mx-2">—</span>
+              <span className="mx-2 text-white/20">—</span>
               {String(projects.length).padStart(2, "0")}
             </p>
             <div className="hidden h-px w-14 overflow-hidden bg-white/10 sm:block sm:w-20">
@@ -394,13 +394,13 @@ export function ProjectCarousel({ projects }: Props) {
                 }}
               />
             </div>
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center">
               <button
                 type="button"
                 aria-label="Previous project"
                 disabled={index === 0}
                 onClick={() => goTo(index - 1)}
-                className="flex h-10 w-10 items-center justify-center text-xl text-white/70 transition-colors duration-300 hover:text-white disabled:opacity-25 sm:h-auto sm:w-auto sm:px-2 sm:py-1 sm:text-lg sm:text-white/40"
+                className="flex h-9 w-9 items-center justify-center text-lg text-white/65 transition-colors duration-300 hover:text-white disabled:opacity-25 sm:h-auto sm:w-auto sm:px-2 sm:py-1 sm:text-lg sm:text-white/40"
               >
                 ←
               </button>
@@ -409,7 +409,7 @@ export function ProjectCarousel({ projects }: Props) {
                 aria-label="Next project"
                 disabled={index === projects.length - 1}
                 onClick={() => goTo(index + 1)}
-                className="flex h-10 w-10 items-center justify-center text-xl text-white/70 transition-colors duration-300 hover:text-white disabled:opacity-25 sm:h-auto sm:w-auto sm:px-2 sm:py-1 sm:text-lg sm:text-white/40"
+                className="flex h-9 w-9 items-center justify-center text-lg text-white/65 transition-colors duration-300 hover:text-white disabled:opacity-25 sm:h-auto sm:w-auto sm:px-2 sm:py-1 sm:text-lg sm:text-white/40"
               >
                 →
               </button>
@@ -417,9 +417,9 @@ export function ProjectCarousel({ projects }: Props) {
           </div>
         </div>
 
-        {/* Mobile page dots — clear “more slides” signal */}
+        {/* Mobile page dots */}
         <div
-          className="mt-4 flex items-center justify-center gap-2 sm:hidden"
+          className="mt-3 flex items-center justify-center gap-1.5 sm:hidden"
           role="tablist"
           aria-label="Project pages"
         >
@@ -431,8 +431,8 @@ export function ProjectCarousel({ projects }: Props) {
               aria-label={`Show ${project.name}`}
               aria-selected={i === index}
               onClick={() => goTo(i)}
-              className={`h-2 rounded-full transition-[width,background-color] duration-300 ${
-                i === index ? "w-7 bg-signal" : "w-2 bg-white/30"
+              className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
+                i === index ? "w-5 bg-signal" : "w-1.5 bg-white/30"
               }`}
             />
           ))}
@@ -500,7 +500,7 @@ export function ProjectCarousel({ projects }: Props) {
                   zIndex: i === index ? 2 : 1,
                 }}
               >
-                <div className={`mx-auto w-full ${wide ? "" : "px-2.5"}`}>
+                <div className={`mx-auto w-full ${wide ? "" : "px-3"}`}>
                   <BrowserFrame
                     src={project.image}
                     alt={project.imageAlt ?? `${project.name} screenshot`}
