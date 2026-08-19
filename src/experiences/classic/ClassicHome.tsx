@@ -210,7 +210,7 @@ export function ClassicHome() {
             <div className="flex flex-col gap-4">
               <a
                 href="mailto:hahosman@gmail.com?subject=Next%20role%20conversation"
-                className="inline-flex items-center justify-center bg-signal px-6 py-3 text-sm font-semibold tracking-wide text-foreground transition-opacity hover:opacity-90"
+                className="inline-flex items-center justify-center rounded-full bg-signal px-7 py-3 text-sm font-semibold tracking-wide text-foreground shadow-[0_10px_28px_rgba(196,92,38,0.28)] transition-[opacity,transform,box-shadow] hover:-translate-y-px hover:opacity-90"
               >
                 hahosman@gmail.com
               </a>

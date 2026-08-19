@@ -260,7 +260,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="mt-8 inline-flex items-center justify-center bg-signal px-6 py-3.5 text-sm font-semibold tracking-wide text-foreground transition-[background-color,transform] duration-300 hover:bg-[#d46a30] hover:tracking-wider disabled:opacity-60"
+        className="mt-8 inline-flex items-center justify-center rounded-full bg-signal px-7 py-3.5 text-sm font-semibold tracking-wide text-foreground shadow-[0_10px_28px_rgba(196,92,38,0.28)] transition-[background-color,transform,box-shadow,letter-spacing] duration-300 hover:-translate-y-px hover:bg-[#d46a30] hover:tracking-wider hover:shadow-[0_14px_32px_rgba(196,92,38,0.34)] disabled:translate-y-0 disabled:opacity-60"
       >
         {status === "sending" ? "Sending…" : "Send message"}
       </button>
