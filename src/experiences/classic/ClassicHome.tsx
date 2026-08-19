@@ -110,7 +110,7 @@ export function ClassicHome() {
             <div className="flex items-end justify-between gap-6">
               <div>
                 <p className="text-sm font-medium uppercase tracking-[0.16em] text-muted">
-                  Selected work
+                  Sites I&apos;ve worked on
                 </p>
                 <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold tracking-[-0.03em] text-foreground">
                   Sites I&apos;ve shipped

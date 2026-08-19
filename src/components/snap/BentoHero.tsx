@@ -63,7 +63,7 @@ export function BentoHero() {
               Herb Hosman
             </h1>
             <p className="bento-rise bento-rise-3 mt-3 text-[clamp(1rem,3.2vw,1.35rem)] font-medium leading-snug tracking-[-0.01em] text-foreground/90">
-              AEM Developer · Software Engineer · Engineering Leader
+              Software Engineer · Engineering Leader · AEM Expert
             </p>
             <p className="bento-rise bento-rise-3 mt-1.5 text-sm text-foreground/55">
               Ex-Adobe · Director of Engineering, Caesars

@@ -359,7 +359,7 @@ export function ProjectCarousel({ projects }: Props) {
       <div className="relative z-20 flex shrink-0 items-end justify-between gap-4 px-5 pt-6 sm:px-10 sm:pt-8">
         <div>
           <p className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-[-0.03em] text-white sm:text-3xl">
-            Selected work
+            Sites I&apos;ve worked on
           </p>
           <p className="mt-1 text-sm text-white/40">
             Scroll or swipe through shipped sites
