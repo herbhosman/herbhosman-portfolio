@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
 import { BrowserFrame } from "@/components/snap/BrowserFrame";
 
@@ -73,13 +73,14 @@ function layoutFor(width: number) {
 
 export function ProjectCarousel({ projects }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const frameAnchorRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
-  /** Which slide’s copy is visible — updates after the snap finishes */
-  const [copyIndex, setCopyIndex] = useState(0);
   const [dragPx, setDragPx] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [width, setWidth] = useState(0);
+  const [dotsTop, setDotsTop] = useState<number | null>(null);
 
   const startX = useRef(0);
   const startY = useRef(0);
@@ -90,27 +91,63 @@ export function ProjectCarousel({ projects }: Props) {
   const widthRef = useRef(0);
   const sectionActive = useRef(false);
   const wheelReady = useRef(false);
-  const copyTimer = useRef(0);
+  const dotsSettling = useRef(false);
+  const dotsSettleTimer = useRef(0);
+
+  const updateDotsPosition = useCallback(() => {
+    if (draggingRef.current || dotsSettling.current) return;
+    const root = rootRef.current;
+    const header = headerRef.current;
+    const frame = frameAnchorRef.current;
+    if (!root || !header || !frame) return;
+    const rootBox = root.getBoundingClientRect();
+    const headerBox = header.getBoundingClientRect();
+    const frameBox = frame.getBoundingClientRect();
+    if (frameBox.top <= headerBox.bottom + 8) return;
+    const mid = (headerBox.bottom + frameBox.top) / 2;
+    setDotsTop(mid - rootBox.top);
+  }, []);
 
   const goTo = useCallback(
     (next: number) => {
       const clamped = Math.max(0, Math.min(projects.length - 1, next));
+      const changed = clamped !== indexRef.current;
       indexRef.current = clamped;
       setIndex(clamped);
       setDragPx(0);
       dragPxRef.current = 0;
-      // Keep outgoing text until the card has fully locked
-      window.clearTimeout(copyTimer.current);
-      copyTimer.current = window.setTimeout(() => {
-        setCopyIndex(clamped);
-      }, SNAP_MS);
+      if (changed) {
+        // Keep dots fixed while the incoming slide scales into place
+        dotsSettling.current = true;
+        window.clearTimeout(dotsSettleTimer.current);
+        dotsSettleTimer.current = window.setTimeout(() => {
+          dotsSettling.current = false;
+          updateDotsPosition();
+        }, SNAP_MS + 50);
+      }
     },
-    [projects.length],
+    [projects.length, updateDotsPosition],
   );
 
   useEffect(() => {
-    return () => window.clearTimeout(copyTimer.current);
+    return () => window.clearTimeout(dotsSettleTimer.current);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!dotsSettling.current) updateDotsPosition();
+    const root = rootRef.current;
+    const frame = frameAnchorRef.current;
+    const ro = new ResizeObserver(() => {
+      if (!dotsSettling.current && !draggingRef.current) updateDotsPosition();
+    });
+    if (root) ro.observe(root);
+    if (frame) ro.observe(frame);
+    window.addEventListener("resize", updateDotsPosition);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", updateDotsPosition);
+    };
+  }, [updateDotsPosition, index, width]);
 
   const finishDrag = useCallback(() => {
     const wasHorizontal = axis.current === "x";
@@ -122,6 +159,7 @@ export function ProjectCarousel({ projects }: Props) {
     if (!wasDragging || !wasHorizontal) {
       setDragPx(0);
       dragPxRef.current = 0;
+      window.requestAnimationFrame(() => updateDotsPosition());
       return;
     }
 
@@ -135,8 +173,9 @@ export function ProjectCarousel({ projects }: Props) {
     else {
       setDragPx(0);
       dragPxRef.current = 0;
+      window.requestAnimationFrame(() => updateDotsPosition());
     }
-  }, [goTo]);
+  }, [goTo, updateDotsPosition]);
 
   useEffect(() => {
     const el = viewportRef.current;
@@ -367,7 +406,10 @@ export function ProjectCarousel({ projects }: Props) {
         Work
       </p>
 
-      <div className="relative z-20 shrink-0 px-5 pt-5 sm:px-10 sm:pt-8">
+      <div
+        ref={headerRef}
+        className="relative z-20 shrink-0 px-5 pt-5 sm:px-10 sm:pt-8"
+      >
         <p className="font-[family-name:var(--font-display)] text-[1.35rem] font-bold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
           Sites I&apos;ve worked on
         </p>
@@ -380,7 +422,12 @@ export function ProjectCarousel({ projects }: Props) {
       </div>
 
       <div
-        className="relative z-20 flex shrink-0 items-center justify-center gap-1.5 px-5 pb-2.5 pt-3 sm:px-10 sm:pb-3 sm:pt-4"
+        className="pointer-events-none absolute left-0 right-0 z-30 flex -translate-y-1/2 justify-center gap-2.5 px-5"
+        style={{
+          top: dotsTop ?? 0,
+          opacity: dotsTop == null ? 0 : 1,
+          transition: "opacity 180ms ease",
+        }}
         role="tablist"
         aria-label="Project pages"
       >
@@ -392,8 +439,10 @@ export function ProjectCarousel({ projects }: Props) {
             aria-label={`Show ${project.name}`}
             aria-selected={i === index}
             onClick={() => goTo(i)}
-            className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
-              i === index ? "w-5 bg-signal" : "w-1.5 bg-white/30 hover:bg-white/45"
+            className={`pointer-events-auto h-3 rounded-full transition-[width,background-color] duration-300 ${
+              i === index
+                ? "w-8 bg-signal"
+                : "w-3 bg-white/40 hover:bg-white/60"
             }`}
           />
         ))}
@@ -407,7 +456,7 @@ export function ProjectCarousel({ projects }: Props) {
         aria-label="Project carousel"
       >
         <div
-          className="project-carousel-track flex h-full items-start pt-1 sm:items-center sm:pt-0"
+          className="project-carousel-track flex h-full items-center"
           style={{
             gap: peek ? gap : 0,
             transform: `translate3d(${offsetX}px, 0, 0)`,
@@ -440,8 +489,6 @@ export function ProjectCarousel({ projects }: Props) {
                 : isEmerging
                   ? sideOpacity + (1 - sideOpacity) * 0.7 * dragBias
                   : sideOpacity;
-            const showCopy = i === copyIndex;
-
             return (
               <article
                 key={project.name}
@@ -458,35 +505,27 @@ export function ProjectCarousel({ projects }: Props) {
                     ? "none"
                     : `transform ${SNAP_MS}ms ${SNAP_EASE}, opacity ${SNAP_MS}ms ${SNAP_EASE}`,
                   zIndex: i === index ? 2 : 1,
+                  pointerEvents: i === index ? "auto" : "none",
                 }}
               >
                 <div className={`mx-auto w-full ${wide ? "" : "px-3"}`}>
-                  <BrowserFrame
-                    src={project.image}
-                    alt={project.imageAlt ?? `${project.name} screenshot`}
-                    urlLabel={
-                      project.href
-                        ? project.hrefLabel
-                        : project.note?.toLowerCase() === "retired"
-                          ? "acrobat.adobe.com"
-                          : "internal"
-                    }
-                    accent={project.accent}
-                    note={project.note}
-                    priority={i === 0}
-                  />
-                  {/* Always mounted so height never collapses mid-slide */}
-                  <div
-                    className="project-slide-copy"
-                    style={{
-                      opacity: showCopy ? 1 : 0,
-                      transition: `opacity 280ms ${SNAP_EASE}`,
-                      pointerEvents: showCopy ? "auto" : "none",
-                    }}
-                    aria-hidden={!showCopy}
-                  >
-                    <ProjectCopy project={project} />
+                  <div ref={i === index ? frameAnchorRef : undefined}>
+                    <BrowserFrame
+                      src={project.image}
+                      alt={project.imageAlt ?? `${project.name} screenshot`}
+                      urlLabel={
+                        project.href
+                          ? project.hrefLabel
+                          : project.note?.toLowerCase() === "retired"
+                            ? "acrobat.adobe.com"
+                            : "internal"
+                      }
+                      accent={project.accent}
+                      note={project.note}
+                      priority={i === 0}
+                    />
                   </div>
+                  <ProjectCopy project={project} />
                 </div>
               </article>
             );
