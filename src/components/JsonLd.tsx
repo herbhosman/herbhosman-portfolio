@@ -10,12 +10,12 @@ export function JsonLd() {
         url: "https://herbhosman.com",
         image: "https://herbhosman.com/herb-hosman.jpg",
         jobTitle: [
-          "AEM Software Engineer",
-          "AEM Architect",
+          "Software Engineer",
           "Engineering Leader",
+          "AEM Expert",
         ],
         description:
-          "Software engineer focused on Adobe Experience Cloud and Adobe Experience Manager. 10+ years of implementation at Adobe, Pluralsight, Hoodoo, and Caesars—including Document Cloud. Open to AEM Architect, Solution Architect, Engineering Manager, and Director of Engineering roles.",
+          "Software engineer, engineering leader, and AEM expert based in Ventura, CA. Experience at Adobe, Pluralsight, Hoodoo, and Caesars.",
         address: {
           "@type": "PostalAddress",
           addressLocality: "Ventura",
@@ -74,7 +74,7 @@ export function JsonLd() {
         url: "https://herbhosman.com",
         name: "Herb Hosman",
         description:
-          "Custom portfolio of Herbert Hosman — AEM software engineer and engineering leader. Experience at Adobe, Pluralsight, Hoodoo, and Caesars.",
+          "Portfolio of Herbert Hosman — software engineer, engineering leader, AEM expert. Experience at Adobe, Pluralsight, Hoodoo, and Caesars.",
         publisher: { "@id": "https://herbhosman.com/#person" },
         inLanguage: "en-US",
       },
@@ -82,7 +82,7 @@ export function JsonLd() {
         "@type": "ProfilePage",
         "@id": "https://herbhosman.com/#profilepage",
         url: "https://herbhosman.com",
-        name: "Herb Hosman | AEM Software Engineer & Engineering Leader",
+        name: "Herb Hosman | Software Engineer, Engineering Leader, AEM Expert",
         isPartOf: { "@id": "https://herbhosman.com/#website" },
         about: { "@id": "https://herbhosman.com/#person" },
         mainEntity: { "@id": "https://herbhosman.com/#person" },

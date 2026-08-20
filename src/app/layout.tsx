@@ -17,9 +17,9 @@ const figtree = Figtree({
 
 const siteUrl = "https://herbhosman.com";
 
-const title = "Herb Hosman | AEM Software Engineer & Engineering Leader";
+const title = "Herb Hosman | Software Engineer, Engineering Leader, AEM Expert";
 const description =
-  "Herb Hosman is a software engineer focused on Adobe Experience Cloud and Adobe Experience Manager (AEM). 10+ years of implementation at Adobe, Pluralsight, Hoodoo, and Caesars—including Document Cloud. Open to AEM Architect, Solution Architect, Engineering Manager, and Director of Engineering roles. Ventura, CA · remote or hybrid.";
+  "Software engineer, engineering leader, and AEM expert based in Ventura, CA. Experience at Adobe, Pluralsight, Hoodoo, and Caesars—Adobe Experience Cloud and high-traffic Experience Manager work. Open to full-time remote or hybrid roles.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -31,6 +31,9 @@ export const metadata: Metadata = {
   keywords: [
     "Herb Hosman",
     "Herbert Hosman",
+    "Software Engineer",
+    "Engineering Leader",
+    "AEM Expert",
     "AEM Software Engineer",
     "AEM Architect",
     "Adobe Experience Manager",
@@ -55,6 +58,15 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon-48.png", type: "image/png", sizes: "48x48" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -62,13 +74,13 @@ export const metadata: Metadata = {
     siteName: "Herb Hosman",
     title,
     description:
-      "Software engineer focused on Adobe Experience Cloud and AEM. Experience at Adobe, Pluralsight, Hoodoo, and Caesars. Open to full-time remote or hybrid roles.",
+      "Software engineer, engineering leader, AEM expert. Adobe, Pluralsight, Hoodoo, and Caesars. Open to full-time remote or hybrid roles.",
     images: [
       {
         url: "/herb-hosman.jpg",
         width: 764,
         height: 1024,
-        alt: "Herbert Hosman — AEM software engineer and engineering leader",
+        alt: "Herbert Hosman — software engineer, engineering leader, AEM expert",
       },
     ],
   },
@@ -76,7 +88,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description:
-      "AEM / Experience Cloud software engineer. Adobe, Pluralsight, Hoodoo, Caesars. Open to work — remote or hybrid.",
+      "Software engineer, engineering leader, AEM expert. Adobe, Pluralsight, Hoodoo, Caesars. Open to work — remote or hybrid.",
     images: ["/herb-hosman.jpg"],
   },
   robots: {
